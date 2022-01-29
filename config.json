@@ -8,5 +8,6 @@
         "port": 4000,
         "name": "blog-db"
     },
+    "JWT": "isikxjnjsoxijasxijaskl",
     "front": ["http://localhost:3000"]
 }
