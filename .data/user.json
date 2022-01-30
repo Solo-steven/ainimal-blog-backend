@@ -1,0 +1,8 @@
+[
+    { 
+        "email" : "author@email.com", 
+        "name": "author",
+        "passwordHash" : "32cf5dd698d7263bb0f3ff15a392cdb69e343478187ef29a6bbaefc2e1d0d61caa6aa4978b7a96be4790bbb6083c5104c9a288457c9026f7bd63a8a3bf26fc0e", 
+        "salt" : "574db7b7ef321c382490542ba8320a26d230f4eed35e206172b0cb02d9d701ea"
+    }
+]

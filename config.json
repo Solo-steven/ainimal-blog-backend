@@ -9,5 +9,15 @@
         "name": "blog-db"
     },
     "JWT": "isikxjnjsoxijasxijaskl",
-    "front": ["http://localhost:3000"]
+    "cors": ["http://localhost:3000"],
+    "swagger": {
+        "swaggerDefinition": {
+            "openapi": "3.0.0",
+            "info": {
+                "title": "Blog API",
+                "version": "1.0.0"
+            }
+        },
+        "apis": ["./router/*.js"]
+    }
 }
