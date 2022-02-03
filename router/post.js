@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const config = require('../config.json');
 const PostModel = require('../model/post');
-
+const TagModel = require('../model/tag');
 /** 
  * @swagger
  *  paths:
@@ -19,7 +19,6 @@ const PostModel = require('../model/post');
  *                    items:
  *                      $ref: "#/components/schemas/Post"
  */
-
 router.get("/", async function(req, res)  {
     try {
         const data = await PostModel.find({});
@@ -34,7 +33,8 @@ router.get("/", async function(req, res)  {
     }catch(err) {
         return res.status(500).json()
     }
-})
+});
+
 /**
  * @swagger
  * paths:
@@ -61,13 +61,42 @@ router.get("/popular", async function(req, res) {
             content: item.content,
             author: item.author,
             timestamp: item.timestamp,
-            image: `http://${config.host.host}:${config.host.port}/image/${item.image}`
+            image: `http://${config.host.host}:${config.host.port}/image/${item.image}`,
+            tags: item.tags
         })));
     }catch(err) {
         console.log(err);
         return res.status(500).json({})
     }
-})
+});
+
+/**
+ * @swagger
+ * paths:
+ *  /post/tag:
+ *   get:
+ *    description: "Get All Tags"
+ *    tags: [post]
+ *    responses:
+ *      200:
+ *        description: "Success Get All Tags"
+ *        content:
+ *          application/json:
+ *            schema:
+ *             type: array
+ *             items:
+ *              type: string
+ */
+router.get('/tag', async function (req, res) {
+    try{
+        const tags = await TagModel.find({});
+        return res.status(200).json(tags.map(tag => tag.name));
+    }catch(err) {
+        console.log(error);
+        return res.status(500).json();
+    }
+});
+
 /**
  * @swagger
  * paths:
@@ -87,14 +116,14 @@ router.get("/:id", async function(req, res)  {
             content: item.content,
             author: item.author,
             timestamp: item.timestamp,
-            image: `http://${config.host.host}:${config.host.port}/image${item.image}`
+            image: `http://${config.host.host}:${config.host.port}/image/${item.image}`,
+            tags: item.tags
         });
     }catch(err) {
         console.log(err);
         res.status(500).send({});
     }
-})
-
+});
 
 /**
  * @swagger
@@ -116,6 +145,5 @@ router.get("/:id", async function(req, res)  {
  *       image:
  *         type: string
  */
-
 
 module.exports = router;

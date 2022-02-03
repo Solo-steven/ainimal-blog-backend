@@ -46,7 +46,8 @@ router.get("/post", async function (req, res) {
             content: item.content,
             author: item.author,
             timestamp: item.timestamp,
-            image: `http://${config.host.host}:${config.host.port}/image/${item.image}`
+            image: `http://${config.host.host}:${config.host.port}/image/${item.image}`,
+            tags: item.tags
         })));
     }catch (err) {
         return res.status(500).json({"message": "internal error"});
@@ -68,16 +69,15 @@ router.get("/post", async function (req, res) {
  */
 router.post("/post" , async function(req, res) {
     const email = req.session.email;
-    const { title, content, status, tags } = req.body;
-    if(!title || !content || !status || !tags || (tags.length ===0 ))
+    const { title, content, tags } = req.body;
+    if(!title || !content || !tags || (tags.length ===0 ))
         return res.status(400).json({message: "need four attributes in request body"});
     const post = new PostModel({
         title,
         content,
-        status,
-        author: email,
         tags,
-        image: `test`,
+        author: email,
+        image: `seed${Math.floor(Math.random() * 7 + 1)}.jpg`,
         timestamp:  (new Date()).toISOString(),
     });
     post.save();
@@ -85,11 +85,11 @@ router.post("/post" , async function(req, res) {
 });
 
 /**
- * @swagger
+ * // @swagger
  * paths:
  *  /user/post:
  *    put:
- *      description: "Change a Post of user"
+ *      description: "Change a Post of user(not yet)."
  *      tags: [user]
  *      requestBody:
  *        content:

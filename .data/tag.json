@@ -1,16 +1,41 @@
 [
-    "frontend",
-    "backend",
-    "react",
-    "redux",
-    "redux-saga",
-    "observable",
-    "functional programming",
-    "SSR",
-    "next.js",
-    "nest.js", 
-    "nodeJs",
-    "database",
-    "Mysql",
-    "MongoDB"
+    {
+        "name": "frontend"
+    },
+    {
+        "name": "backend"
+    },
+    {
+        "name": "react"
+    },
+    {
+        "name": "redux"
+    },
+    {
+        "name": "redux-saga"
+    },
+    {
+        "name": "observable"
+    },
+    {
+        "name": "SSR"
+    },
+    {
+        "name": "next.js"
+    },
+    {
+        "name": "next.js"
+    },
+    {
+        "name": "nodeJS"
+    },
+    {
+        "name": "database"
+    },
+    {
+        "name": "Mysql"
+    },
+    {
+        "name": "MongoDB"
+    }
 ]
