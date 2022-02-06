@@ -3,22 +3,20 @@ const JWT = require('jsonwebtoken');
 const config = require('../config.json');
 const PostModel = require('../model/post');
 
-
 router.use(function (req, res, next) {
     const token = req.get("Authorization");
-    if(!token)  return res.status(400).json({ message: "no token" });
+    if(!token)  return res.status(401).json({ message: "no token" });
     try {
         const payload  = JWT.verify(token,config.JWT);
         const  email = payload.email;
         if(!email) 
-           return res.status(400).json({message: "token error"});
+           return res.status(401).json({message: "token error"});
         req.session = { token, email };
         next();
     }catch (err) {
         return res.status(401).json({message: "need to refresh token"});
     }
-})
-
+});
 /**
  * @swagger
  * paths:
@@ -35,6 +33,12 @@ router.use(function (req, res, next) {
  *               type: array
  *               items:
  *                  $ref: "#/components/schemas/Post"
+ *        500:
+ *          description: "Mongodb error"
+ *          content:
+ *              application/json:
+ *                schema: 
+ *                  $ref: "#components/schemas/ErrorMessage"
  */
 router.get("/post", async function (req, res) {
     const email = req.session.email;
@@ -53,7 +57,6 @@ router.get("/post", async function (req, res) {
         return res.status(500).json({"message": "internal error"});
     }
 });
-
 /**
  * @swagger
  * paths:
@@ -66,12 +69,22 @@ router.get("/post", async function (req, res) {
  *          application/json:
  *            schema: 
  *              $ref: "#components/schemas/CreatePost"
+ *      responses:
+ *        200:
+ *          description: "Success Create a User Post"
+ *          content:
+ *            application/json:
+ *               schema: 
+ *                 $ref: "#components/schemas/SuccessMessage"
+ *        400:
+ *          description: ""
+ * 
  */
 router.post("/post" , async function(req, res) {
     const email = req.session.email;
     const { title, content, tags } = req.body;
     if(!title || !content || !tags || (tags.length ===0 ))
-        return res.status(400).json({message: "need four attributes in request body"});
+        return res.status(400).json({message: "lock of necessary request body variable"});
     const post = new PostModel({
         title,
         content,
@@ -81,11 +94,10 @@ router.post("/post" , async function(req, res) {
         timestamp:  (new Date()).toISOString(),
     });
     post.save();
-    res.status(200).json({ message: "success save post"});
+    res.status(200).json({ message: "success create post"});
 });
-
 /**
- * // @swagger
+ * @swagger
  * paths:
  *  /user/post:
  *    put:
@@ -95,10 +107,22 @@ router.post("/post" , async function(req, res) {
  *        content:
  *          application/json:
  *            schema: 
- *              $ref: "#components/schemas/CreatePost"
+ *              $ref: "#components/schemas/UpdatePost"
  */
-
-
+router.put("/post", async function(req, res) {
+    const { title, content, tags, id, status } = req.body;
+    if(!id || !title || !content || !status || !tags || (tags.length ===0 ))
+        return res.status(400).json({message: "lock of necessary request body variable"});
+    const post = await PostModel.findById(id);
+    const email = req.session.email;
+    if(email !== post.author)
+        return res.status(403).json({message: "user error"});
+    post.title = title;
+    post.content = content;
+    post.tags = tags;
+    post.save();
+    res.status(200).json({ message: "success update post"});
+});
 /**
  * @swagger
  * components:
@@ -116,7 +140,31 @@ router.post("/post" , async function(req, res) {
  *                type: array
  *                items:
  *                  type: string
+ *      UpdatePost:
+ *          type: object
+ *          properties:
+ *             id:
+ *               type: string
+ *             title:
+ *               type: string
+ *             content:
+ *                type: string
+ *             status:
+ *                type: string
+ *             tags:
+ *                type: array
+ *                items:
+ *                  type: string  
+ *      ErrorMessage:
+ *          type: object
+ *          properties:
+ *              message:
+ *                type: string   
+ *      SuceessMessage:
+ *          type: object
+ *          properties:
+ *              message:
+ *                type: string            
  */
-
 
 module.exports = router;
