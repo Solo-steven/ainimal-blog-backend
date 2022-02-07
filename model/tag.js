@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const TagSchema = new Schema({
-    name: String
+	name: String,
 });
 
 module.exports = model('tags', TagSchema);

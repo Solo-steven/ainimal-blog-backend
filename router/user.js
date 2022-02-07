@@ -3,19 +3,20 @@ const JWT = require('jsonwebtoken');
 const config = require('../config.json');
 const PostModel = require('../model/post');
 
-router.use(function (req, res, next) {
-    const token = req.get("Authorization");
-    if(!token)  return res.status(401).json({ message: "no token" });
-    try {
-        const payload  = JWT.verify(token,config.JWT);
-        const  email = payload.email;
-        if(!email) 
-           return res.status(401).json({message: "token error"});
-        req.session = { token, email };
-        next();
-    }catch (err) {
-        return res.status(401).json({message: "need to refresh token"});
-    }
+router.use(function(req, res, next) {
+	const token = req.get('Authorization');
+	if (!token) return res.status(401).json({ message: 'no token' });
+	try {
+		const payload = JWT.verify(token, config.JWT);
+		const email = payload.email;
+		if (!email) {
+			return res.status(401).json({ message: 'token error' });
+		}
+		req.session = { token, email };
+		next();
+	} catch (err) {
+		return res.status(401).json({ message: 'need to refresh token' });
+	}
 });
 /**
  * @swagger
@@ -29,7 +30,7 @@ router.use(function (req, res, next) {
  *          description: "Success"
  *          content:
  *            application/json:
- *              schema: 
+ *              schema:
  *               type: array
  *               items:
  *                  $ref: "#/components/schemas/Post"
@@ -37,25 +38,25 @@ router.use(function (req, res, next) {
  *          description: "Mongodb error"
  *          content:
  *              application/json:
- *                schema: 
+ *                schema:
  *                  $ref: "#components/schemas/ErrorMessage"
  */
-router.get("/post", async function (req, res) {
-    const email = req.session.email;
-    try{
-        const data = await PostModel.find({author: email});
-        return res.status(200).json(data.map(item => ({
-            id: item._id,
-            title: item.title,
-            content: item.content,
-            author: item.author,
-            timestamp: item.timestamp,
-            image: `http://${config.host.host}:${config.host.port}/image/${item.image}`,
-            tags: item.tags
-        })));
-    }catch (err) {
-        return res.status(500).json({"message": "internal error"});
-    }
+router.get('/post', async function(req, res) {
+	const email = req.session.email;
+	try {
+		const data = await PostModel.find({ author: email });
+		return res.status(200).json(data.map((item) => ({
+			id: item._id,
+			title: item.title,
+			content: item.content,
+			author: item.author,
+			timestamp: item.timestamp,
+			image: `http://${config.host.host}:${config.host.port}/image/${item.image}`,
+			tags: item.tags,
+		})));
+	} catch (err) {
+		return res.status(500).json({ 'message': 'internal error' });
+	}
 });
 /**
  * @swagger
@@ -67,34 +68,37 @@ router.get("/post", async function (req, res) {
  *      requestBody:
  *        content:
  *          application/json:
- *            schema: 
+ *            schema:
  *              $ref: "#components/schemas/CreatePost"
  *      responses:
  *        200:
  *          description: "Success Create a User Post"
  *          content:
  *            application/json:
- *               schema: 
+ *               schema:
  *                 $ref: "#components/schemas/SuccessMessage"
  *        400:
  *          description: ""
- * 
+ *
  */
-router.post("/post" , async function(req, res) {
-    const email = req.session.email;
-    const { title, content, tags } = req.body;
-    if(!title || !content || !tags || (tags.length ===0 ))
-        return res.status(400).json({message: "lock of necessary request body variable"});
-    const post = new PostModel({
-        title,
-        content,
-        tags,
-        author: email,
-        image: `seed${Math.floor(Math.random() * 7 + 1)}.jpg`,
-        timestamp:  (new Date()).toISOString(),
-    });
-    post.save();
-    res.status(200).json({ message: "success create post"});
+router.post('/post', async function(req, res) {
+	const email = req.session.email;
+	const { title, content, tags } = req.body;
+	if (!title || !content || !tags || (tags.length ===0 )) {
+		return res
+			.status(400)
+			.json({ message: 'lock of necessary request body variable' });
+	}
+	const post = new PostModel({
+		title,
+		content,
+		tags,
+		author: email,
+		image: `seed${Math.floor(Math.random() * 7 + 1)}.jpg`,
+		timestamp: (new Date()).toISOString(),
+	});
+	post.save();
+	res.status(200).json({ message: 'success create post' });
 });
 /**
  * @swagger
@@ -106,22 +110,26 @@ router.post("/post" , async function(req, res) {
  *      requestBody:
  *        content:
  *          application/json:
- *            schema: 
+ *            schema:
  *              $ref: "#components/schemas/UpdatePost"
  */
-router.put("/post", async function(req, res) {
-    const { title, content, tags, id, status } = req.body;
-    if(!id || !title || !content || !status || !tags || (tags.length ===0 ))
-        return res.status(400).json({message: "lock of necessary request body variable"});
-    const post = await PostModel.findById(id);
-    const email = req.session.email;
-    if(email !== post.author)
-        return res.status(403).json({message: "user error"});
-    post.title = title;
-    post.content = content;
-    post.tags = tags;
-    post.save();
-    res.status(200).json({ message: "success update post"});
+router.put('/post', async function(req, res) {
+	const { title, content, tags, id, status } = req.body;
+	if (!id || !title || !content || !status || !tags || (tags.length ===0 )) {
+		return res
+			.status(400)
+			.json({ message: 'lock of necessary request body variable' });
+	}
+	const post = await PostModel.findById(id);
+	const email = req.session.email;
+	if (email !== post.author) {
+		return res.status(403).json({ message: 'user error' });
+	}
+	post.title = title;
+	post.content = content;
+	post.tags = tags;
+	post.save();
+	res.status(200).json({ message: 'success update post' });
 });
 /**
  * @swagger
@@ -162,29 +170,31 @@ router.put("/post", async function(req, res) {
  *               schema:
  *                $ref: "#/components/schemas/ErrorMessage"
  */
-router.get("/post/:Id", async function(req, res) {
-    const {Id} = req.params;
-    if(!Id)
-        return res.status(400).json({ message: "lock of id"});
-    try{
-        const post = await PostModel.findById(Id);
-        const email = req.session.email;
-        if(post.author !== email)
-            return res.status(403).json({message: "user forbidden"});
-        return res.status(200).json({
-            id: post._id,
-            title: post.title,
-            content: post.content,
-            author: post.author,
-            timestamp: post.timestamp,
-            image: `http://${config.host.host}:${config.host.port}/image/${post.image}`,
-            tags: post.tags
-        })
-    }catch(err){
-        console.log(err)
-        return res.status(500).json({ message: "Mongodb Error"})
-    }
-})
+router.get('/post/:Id', async function(req, res) {
+	const { Id } = req.params;
+	if (!Id) {
+		return res.status(400).json({ message: 'lock of id' });
+	}
+	try {
+		const post = await PostModel.findById(Id);
+		const email = req.session.email;
+		if (post.author !== email) {
+			return res.status(403).json({ message: 'user forbidden' });
+		}
+		return res.status(200).json({
+			id: post._id,
+			title: post.title,
+			content: post.content,
+			author: post.author,
+			timestamp: post.timestamp,
+			image: `http://${config.host.host}:${config.host.port}/image/${post.image}`,
+			tags: post.tags,
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: 'Mongodb Error' });
+	}
+});
 /**
  * @swagger
  * components:
@@ -216,17 +226,17 @@ router.get("/post/:Id", async function(req, res) {
  *             tags:
  *                type: array
  *                items:
- *                  type: string  
+ *                  type: string
  *      ErrorMessage:
  *          type: object
  *          properties:
  *              message:
- *                type: string   
+ *                type: string
  *      SuceessMessage:
  *          type: object
  *          properties:
  *              message:
- *                type: string            
+ *                type: string
  */
 
 module.exports = router;
