@@ -105,11 +105,11 @@ router.get('/tag', async function (req, res) {
  *      description: "Get Post By Id"
  *      tags: [post]
  */
-router.get("/:id", async function(req, res)  {
-    const {id} = req.params;
-    if(!id) return res.status(404).json({})
+router.get("/:Id", async function(req, res)  {
+    const {Id} = req.params;
+    if(!Id) return res.status(404).json({})
     try {
-        const item = await PostModel.findById(id);
+        const item = await PostModel.findById(Id);
         return res.status(200).json({
             id: item._id,
             title: item.title,

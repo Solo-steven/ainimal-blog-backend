@@ -125,6 +125,68 @@ router.put("/post", async function(req, res) {
 });
 /**
  * @swagger
+ * paths:
+ *  /user/post/:Id:
+ *   get:
+ *      description: "Get A User Post By Id"
+ *      tags: [user]
+ *      parameters:
+ *       - in: path
+ *         name: Id
+ *         schema:
+ *            type: string
+ *         description: "Id for user post"
+ *      responses:
+ *         200:
+ *          description: "Success get user Post"
+ *          content:
+ *            application/json:
+ *               schema:
+ *                  $ref: "#/components/schemas/Post"
+ *         400:
+ *           description: "Lock of Id for request"
+ *           content:
+ *              application/json:
+ *               schema:
+ *                $ref: "#/components/schemas/ErrorMessage"
+ *         403:
+ *           description: "Access anther user's post"
+ *           content:
+ *              application/json:
+ *               schema:
+ *                $ref: "#/components/schemas/ErrorMessage"
+ *         500:
+ *           description: "Mongodb error"
+ *           content:
+ *              application/json:
+ *               schema:
+ *                $ref: "#/components/schemas/ErrorMessage"
+ */
+router.get("/post/:Id", async function(req, res) {
+    const {Id} = req.params;
+    if(!Id)
+        return res.status(400).json({ message: "lock of id"});
+    try{
+        const post = await PostModel.findById(Id);
+        const email = req.session.email;
+        if(post.author !== email)
+            return res.status(403).json({message: "user forbidden"});
+        return res.status(200).json({
+            id: post._id,
+            title: post.title,
+            content: post.content,
+            author: post.author,
+            timestamp: post.timestamp,
+            image: `http://${config.host.host}:${config.host.port}/image/${post.image}`,
+            tags: post.tags
+        })
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({ message: "Mongodb Error"})
+    }
+})
+/**
+ * @swagger
  * components:
  *   schemas:
  *      CreatePost:
