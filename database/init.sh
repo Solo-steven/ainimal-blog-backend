@@ -5,18 +5,18 @@ mongoimport --jsonArray \
     --collection=users \
     --drop \
     --jsonArray \
-    /.test/user.json
+    /start/user.json
 
 mongoimport --jsonArray \
     --db=blog-db \
     --collection=posts \
     --drop \
     --jsonArray \
-    /.test/post.json
+    /start/post.json
 
 mongoimport --jsonArray \
     --db=blog-db \
     --collection=tags \
     --drop \
     --jsonArray \
-    /.test/tag.json
+    /start/tag.json

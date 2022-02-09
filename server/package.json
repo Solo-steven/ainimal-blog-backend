@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "nodemon index.js",
-    "db:start": "docker-compose up -d",
-    "db:stop": "docker-compose down"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",

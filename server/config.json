@@ -4,8 +4,8 @@
         "port": 5000
     },
     "db": {
-        "host": "localhost",
-        "port": 4000,
+        "host": "blog_database",
+        "port": 27017,
         "name": "blog-db"
     },
     "JWT": "isikxjnjsoxijasxijaskl",
