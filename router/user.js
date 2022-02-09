@@ -232,7 +232,7 @@ router.get('/post/:Id', async function(req, res) {
  *          properties:
  *              message:
  *                type: string
- *      SuceessMessage:
+ *      SuccessMessage:
  *          type: object
  *          properties:
  *              message:
